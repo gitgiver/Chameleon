@@ -35,8 +35,8 @@ static const std::string experience_father_path = father_path + "experience/";
 #define min_inner_fan_out float(1.0)
 //#define max_inner_fan_out 333
 #define max_inner_fan_out float(1024.0)
-#define min_data_set_size 10000000
-#define max_data_set_size 50000000
+#define min_data_set_size 1000000
+#define max_data_set_size 5000000
 //#define max_data_set_size 100000000
 
 inline float shrink_root_fan_out(float x) {

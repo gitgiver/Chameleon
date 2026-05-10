@@ -142,7 +142,7 @@ public:
 }
 int main(int argc, char const *argv[]) {
 
-    double random_rate_discount_rate = 0.9997;
+    double random_rate_discount_rate = 0.985;
 //    double random_rate_discount_rate = 0.993;
     auto *rs = create_shared_memory<RunningStatus>();
     rs->random_rate = 1;

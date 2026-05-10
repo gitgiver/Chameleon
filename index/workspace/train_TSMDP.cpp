@@ -77,7 +77,7 @@ std::tuple<torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor> exp_small_to
     return result;
 }
 
-#define dataset_size_for_tree 200000
+#define dataset_size_for_tree 50000
 //#define dataset_size_for_tree 5000000
 #define memory_weight float(0.5)
 
@@ -349,7 +349,7 @@ int main(){
         q_network->to(GPU_DEVICE);
         float loss_count = 0;
 
-        for(int k = 0;k < 100 ;++k){
+        for(int k = 0;k < 30 ;++k){
             std::vector<torch::Tensor> pdf_batch;
             std::vector<torch::Tensor> value_batch;
             std::vector<torch::Tensor> action_batch;
@@ -387,7 +387,7 @@ int main(){
                 q_target_network->to(GPU_DEVICE);
                 q_network->to(GPU_DEVICE);
             }
-            random_rate *= 0.9995;
+            random_rate *= 0.988;
 //            random_rate *= 0.995;
         }
         if(random_rate < 3e-3){
