@@ -3,6 +3,9 @@
 #include <random>
 #include<functional>
 #include <iomanip>
+#include <chrono>
+#include <numeric>
+#include <algorithm>
 #include <torch/torch.h>
 #include "../include/DEFINE.h"
 
@@ -52,6 +55,8 @@ std::vector<int> Uniform_GenData(int n) {
 auto global_timer=TimerClock();
 
 GlobalController controller;
+
+long long g_p50 = 0, g_p99 = 0, g_p999 = 0, g_avg_lat = 0;
 Cost hits_basic_evaluation(std::vector<std::pair<KEY_TYPE, VALUE_TYPE>> dataset, bool using_model = true) {
     experience_t exp_chosen;
     auto min_max = get_min_max<KEY_TYPE, VALUE_TYPE>(dataset.begin(), dataset.end());
@@ -94,6 +99,26 @@ Cost hits_basic_evaluation(std::vector<std::pair<KEY_TYPE, VALUE_TYPE>> dataset,
     exp_chosen.cost.get = (float) ((double) tc.get_timer_nanoSec() / ((double) query_dis.size()));
     auto count_node_result = index->count_node_of_each_layer();
     //std::cout <<count_node_result<< std::endl;
+
+    // percentile latency stats on a sample
+    const int SAMPLE_SIZE = std::min<size_t>(100000, query_dis.size());
+    std::vector<long long> latencies;
+    latencies.reserve(SAMPLE_SIZE);
+    for (int i = 0; i < SAMPLE_SIZE; ++i) {
+        auto id = query_dis[i];
+        auto start = std::chrono::high_resolution_clock::now();
+        index->get_with_cost(dataset[id].first, value);
+        auto end = std::chrono::high_resolution_clock::now();
+        latencies.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count());
+    }
+    std::sort(latencies.begin(), latencies.end());
+    auto p50  = latencies[size_t(SAMPLE_SIZE * 50  / 100)];
+    auto p99  = latencies[size_t(SAMPLE_SIZE * 99  / 100)];
+    auto p999 = latencies[size_t(SAMPLE_SIZE * 999 / 1000)];
+    auto avg  = (long long) exp_chosen.cost.get;
+    std::cout << "latency: avg=" << avg << " p50=" << p50 << " p99=" << p99 << " p999=" << p999 << " (ns)" << std::endl;
+    g_avg_lat = avg; g_p50 = p50; g_p99 = p99; g_p999 = p999;
+
     delete index;
     return exp_chosen.cost;
 }
@@ -180,7 +205,7 @@ int main() {
     for (int dis = 1; dis < 2; dis++) {
         for (int length: std::vector<float>({50e6,100e6,150e6,200e6})) {
             for (const auto &dataset_name: std::vector<std::string>(
-                    {"logn.data","uden.data","osmc.data","face.data"})) {
+                    {"face.data"})) {
                 dataset = dataset_source::get_dataset<std::pair<KEY_TYPE, VALUE_TYPE>>(data_father_path + dataset_name);
                 if(dataset.size() > length){
                     dataset.resize(length);
@@ -209,6 +234,8 @@ int main() {
                 exp_chosen.cost = hits_basic_evaluation(dataset, true);
                 std::cout << "cha:" << exp_chosen.cost << std::endl;
                 result << "cha:" << exp_chosen.cost << std::endl;
+                std::cout << "latency: avg=" << g_avg_lat << " p50=" << g_p50 << " p99=" << g_p99 << " p999=" << g_p999 << " (ns)" << std::endl;
+                result << "latency: avg=" << g_avg_lat << " p50=" << g_p50 << " p99=" << g_p99 << " p999=" << g_p999 << " (ns)" << std::endl;
                 puts("============================");
                 result << "============================" << std::endl;
             }

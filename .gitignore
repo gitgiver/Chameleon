@@ -1,0 +1,17 @@
+# 数据集（大二进制文件）
+data/data_set/*
+!data/data_set/*.md
+
+# 训练产物
+data/model/
+data/experience/
+data/backup_dataset/
+data/read_only/
+
+# 编译产物
+Release/
+build/
+
+# 杂项
+*.log
+*.bak
