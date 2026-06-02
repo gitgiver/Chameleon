@@ -93,7 +93,7 @@ int main() {
 //            {1, 100},
     };
     std::ofstream result(father_path + "dynamic_2_result/add_erase_result_2.txt");
-    for (const auto &dataset_name: std::vector<std::string>({  "osmc.data","face.data", "logn.data","uden.data",})) {
+    for (const auto &dataset_name: std::vector<std::string>({  "face.data","uden.data",})) {
         dataset = dataset_source::get_dataset<std::pair<KEY_TYPE, VALUE_TYPE>>(data_father_path + dataset_name);
         std::shuffle(dataset.begin(), dataset.end(), e);
         train_size = int(0.2 * int(dataset.size()));

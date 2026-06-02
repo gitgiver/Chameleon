@@ -12,7 +12,7 @@
 typedef double KEY_TYPE;
 //typedef long long KEY_TYPE;
 typedef double VALUE_TYPE;
-static const std::string father_path = "/root/go/Chameleon/data/";
+static const std::string father_path = "/root/shared-nvme/go/Chameleon/data/";
 static const std::string data_father_path = father_path + "data_set/";
 static const std::string train_dataset_path = father_path + "train_dataset/";
 static const std::string model_father_path = father_path + "model/";
@@ -35,8 +35,8 @@ static const std::string experience_father_path = father_path + "experience/";
 #define min_inner_fan_out float(1.0)
 //#define max_inner_fan_out 333
 #define max_inner_fan_out float(1024.0)
-#define min_data_set_size 1000000
-#define max_data_set_size 5000000
+#define min_data_set_size 10000000
+#define max_data_set_size 50000000
 //#define max_data_set_size 100000000
 
 inline float shrink_root_fan_out(float x) {

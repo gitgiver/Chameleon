@@ -9,7 +9,7 @@
 #include "../include/DEFINE.h"
 
 //#define CB
-#define using_small_network
+//#define using_small_network
 
 #include "../index/include/Index.hpp"
 #include "../include/DataSet.hpp"
@@ -140,9 +140,9 @@ int main() {
     std::string dis_type;
 
     for (int dis = 1; dis < 2; dis++) {
-        for (int length: std::vector<float>({200e6})) {
+        for (int length: std::vector<float>({50e6, 100e6, 150e6})) {
             for (const auto &dataset_name: std::vector<std::string>(
-                    {"osmc.data","face.data","uden.data","logn.data"})) {
+                    {"face.data","uden.data"})) {
                 dataset = dataset_source::get_dataset<std::pair<KEY_TYPE, VALUE_TYPE>>(data_father_path + dataset_name);
                 std::sort(dataset.begin(), dataset.end(),
                           [&](std::pair<KEY_TYPE, VALUE_TYPE> &a, std::pair<KEY_TYPE, VALUE_TYPE> &b) {

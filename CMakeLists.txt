@@ -3,15 +3,22 @@ project(HITS)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CONDA_ENV_PATH "/root/.conda/envs/chameleon")
 
 set(CMAKE_CXX_FLAGS_DEBUG "-march=native ${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_CXX_FLAGS_RELEASE "-march=native  ${CMAKE_CXX_FLAGS_RELEASE}")
 
 set(gpu_device torch::kCUDA)
-set(data_father_path "\"/root/go/Chameleon/data/\"")
+set(data_father_path "\"/root/shared-nvme/go/Chameleon/data/\"")
 
 set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
-set(Torch_DIR /root/.conda/envs/for_chameleon/lib/python3.10/site-packages/torch/share/cmake/Torch)
+set(Torch_DIR "${CONDA_ENV_PATH}/lib/python3.10/site-packages/torch/share/cmake/Torch")
+
+# Help cmake find Boost in the conda environment
+set(Boost_ROOT "${CONDA_ENV_PATH}")
+set(BOOST_ROOT "${CONDA_ENV_PATH}")
+set(BOOST_INCLUDEDIR "${CONDA_ENV_PATH}/include")
+set(BOOST_LIBRARYDIR "${CONDA_ENV_PATH}/lib")
 
 #set(CUDA_LAUNCH_BLOCKING 1)
 #set(TORCH_USE_CUDA_DSA 1)
@@ -28,8 +35,9 @@ configure_file(
 find_package(Python3 COMPONENTS Interpreter Development)
 find_package(Torch REQUIRED)
 find_package(Boost REQUIRED COMPONENTS fiber date_time system filesystem)
+include_directories(${Boost_INCLUDE_DIRS})
 set(gpu_device torch::kCUDA)
-set(data_father_path "\"/root/go/Chameleon/data/\"")
+set(data_father_path "\"/root/shared-nvme/go/Chameleon/data/\"")
 
 #link_libraries("${TORCH_LIBRARIES}" Python3::Python Python3::NumPy)
 link_libraries("${TORCH_LIBRARIES}" Python3::Python)
@@ -44,7 +52,7 @@ add_executable(main main.cpp
 #        index/include/RL_network.hpp index/workspace/gen_exp.hpp
 #        index/workspace/global_on_policy.cpp index/workspace/train.cpp
         )
-target_include_directories(main PRIVATE /root/.conda/envs/for_chameleon/lib/python3.10/site-packages/numpy/_core/include)
+target_include_directories(main PRIVATE "${CONDA_ENV_PATH}/lib/python3.10/site-packages/numpy/_core/include")
 
 add_executable(train index/workspace/train.cpp)
 
