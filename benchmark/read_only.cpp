@@ -201,37 +201,35 @@ int main() {
                (father_path + "read_only/read_only_result" + string_s.str() + ".txt").c_str());
     }
     std::ofstream result(father_path + "read_only/read_only_result.txt", std::ios::out | std::ios::binary);
-    std::string dis_type;
-    float length = 200e6;
-    for (int round = 1; round <= 4; round++) {
-        for (const auto &dataset_name: std::vector<std::string>(
-                {"face.data"})) {
-            dataset = dataset_source::get_dataset<std::pair<KEY_TYPE, VALUE_TYPE>>(data_father_path + dataset_name);
-            if(dataset.size() > length){
-                dataset.resize(length);
-            }
-            std::sort(dataset.begin(), dataset.end(),
-                      [&](std::pair<KEY_TYPE, VALUE_TYPE> &a, std::pair<KEY_TYPE, VALUE_TYPE> &b) {
-                          return a.first < b.first;});
-            query_dis.clear();
-            query_dis = Uniform_GenData(dataset.size());
-            dis_type = "uniform";
+    for (int length: std::vector<float>({50e6, 100e6, 150e6})) {
+            for (int round = 1; round <= 1; round++) {
+                for (const auto &dataset_name: std::vector<std::string>({"face.data"})) {
+                    dataset = dataset_source::get_dataset<std::pair<KEY_TYPE, VALUE_TYPE>>(data_father_path + dataset_name);
+                    if(dataset.size() > length){
+                        dataset.resize(length);
+                    }
+                    std::sort(dataset.begin(), dataset.end(),
+                              [&](std::pair<KEY_TYPE, VALUE_TYPE> &a, std::pair<KEY_TYPE, VALUE_TYPE> &b) {
+                                  return a.first < b.first;});
+                    query_dis.clear();
+                    query_dis = Zipf_GenData(dataset.size());
 
-            std::cout << "round:" << round << " length:" << length<< " dis:" << dis_type;
-            std::cout << " dataset_name:" << dataset_name << std::endl;
-            result << "round:" << round << " length:" << length << " dis:" << dis_type;
-            result << " dataset_name:" << dataset_name << std::endl;
-            std::sort(dataset.begin(), dataset.end(),
-                      [&](std::pair<KEY_TYPE, VALUE_TYPE> &a, std::pair<KEY_TYPE, VALUE_TYPE> &b) {
-                          return a.first < b.first;});
-            exp_chosen.cost = hits_basic_evaluation(dataset, true);
-            std::cout << "cha:" << exp_chosen.cost << std::endl;
-            result << "cha:" << exp_chosen.cost << std::endl;
-            std::cout << "latency: avg=" << g_avg_lat << " p50=" << g_p50 << " p99=" << g_p99 << " p999=" << g_p999 << " (ns)" << std::endl;
-            result << "latency: avg=" << g_avg_lat << " p50=" << g_p50 << " p99=" << g_p99 << " p999=" << g_p999 << " (ns)" << std::endl;
-            puts("============================");
-            result << "============================" << std::endl;
+                    std::cout << "round:" << round << " length:" << length<< " dis:zipf";
+                    std::cout << " dataset_name:" << dataset_name << std::endl;
+                    result << "round:" << round << " length:" << length << " dis:zipf";
+                    result << " dataset_name:" << dataset_name << std::endl;
+                    std::sort(dataset.begin(), dataset.end(),
+                              [&](std::pair<KEY_TYPE, VALUE_TYPE> &a, std::pair<KEY_TYPE, VALUE_TYPE> &b) {
+                                  return a.first < b.first;});
+                    exp_chosen.cost = hits_basic_evaluation(dataset, true);
+                    std::cout << "cha:" << exp_chosen.cost << std::endl;
+                    result << "cha:" << exp_chosen.cost << std::endl;
+                    std::cout << "latency: avg=" << g_avg_lat << " p50=" << g_p50 << " p99=" << g_p99 << " p999=" << g_p999 << " (ns)" << std::endl;
+                    result << "latency: avg=" << g_avg_lat << " p50=" << g_p50 << " p99=" << g_p99 << " p999=" << g_p999 << " (ns)" << std::endl;
+                    puts("============================");
+                    result << "============================" << std::endl;
+                }
+            }
         }
     }
-}
 
